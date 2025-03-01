@@ -25,14 +25,12 @@ from app.security import (
 # get_current_active_user,
 app = FastAPI()
 
-origins = ["*"]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["http://localhost:3000", "http://31.130.150.30:8000", "http://31.130.150.30", "http://localhost"],  # Список разрешенных источников
+    allow_credentials=True,  # Разрешить передачу credentials (cookies, заголовки авторизации)
+    allow_methods=["*"],  # Разрешить все методы
+    allow_headers=["*"],  # Разрешить все заголовки
 )
 
 # SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
