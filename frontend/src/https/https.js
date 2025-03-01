@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-export const API_URL = "";
+export const API_URL = "http://31.130.150.30:8000";
 
 const api = axios.create({
     withCredentials: true,

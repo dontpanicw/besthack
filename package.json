@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "mobx-persist-store": "^1.1.5"
+  }
+}
