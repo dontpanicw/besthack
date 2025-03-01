@@ -3,20 +3,24 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 import os
-from typing import List
+from dotenv import load_dotenv
 
-app = FastAPI()
+from app.repositories import models
 
-# Получаем URL базы данных из переменных окружения
+# Загружаем переменные окружения из .env файла, если он существует
+load_dotenv()
+
+# Получаем строку подключения к базе данных
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Создаем движок SQLAlchemy
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# Создаем таблицы
-models.Base.metadata.create_all(bind=engine)
+# Настройки для JWT
+SECRET_KEY: str = os.getenv("SECRET_KEY", "secret_key")
+ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 # Dependency
 def get_db():
