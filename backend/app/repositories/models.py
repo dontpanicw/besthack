@@ -24,14 +24,3 @@ class User(Base):
     hashed_password = Column(String)
     is_admin = Column(Boolean, default=False)
 
-class Order(Base):
-    __tablename__ = "order"
-
-    id = Column(Integer, primary_key=True, index=True)
-    order_date = Column(DateTime, nullable=True, server_default=func.now())
-    lot_number = Column(Integer, nullable=True)
-    code_KSSS_NB = Column(Integer, nullable=True)
-    code_KSSS_fuel = Column(Integer, nullable=True)
-    volume = Column(Integer, nullable=True)
-    delivery_type = Column(String, nullable=True)
-    user_id = Column(Integer, nullable=True)

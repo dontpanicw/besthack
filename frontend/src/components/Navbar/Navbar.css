@@ -1,0 +1,19 @@
+.NavBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.NavBar button {
+    border: 1px solid var(--main_orange);
+    background-color: rgba(36, 36, 35, 0.6);
+    border-radius: 30px;
+    margin-top: 20px;
+    width: 105px;
+    height: 33px;
+    text-align: center;
+    color: var(--white);
+    font-family: "Open Sans";
+
+}
