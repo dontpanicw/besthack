@@ -26,12 +26,12 @@ from app.security import (
 app = FastAPI()
 
 # Получаем разрешенные источники из переменных окружения или используем значения по умолчанию
-allowed_origins_str = os.getenv("ALLOW_ORIGINS", "*")
-origins = allowed_origins_str.split(",") if allowed_origins_str != "*" else ["*"]
+# allowed_origins_str = os.getenv("ALLOW_ORIGINS", "*")
+# origins = allowed_origins_str.split(",") if allowed_origins_str != "*" else ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:3000", "http://31.130.150.30:8000", "http://31.130.150.30", "http://localhost"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
