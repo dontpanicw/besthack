@@ -1,0 +1,77 @@
+.AddLot {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.Add_Many_Lots {
+    max-width: 1205px;
+    margin: 0 auto;
+}
+
+.AddFile{
+    margin: 0 auto;
+    width: 1205px;
+    border: 1px solid var(--white);
+    border-radius: 30px;
+    height: 242px;
+    background-color: var(--dark_grey);
+    margin-bottom: 25px;
+}
+
+.Add_One_Lot {
+    width: 1205px;
+    margin: 0 auto;
+}
+
+.input-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.input-row.triple {
+    grid-template-columns: 1fr auto 1fr;
+}
+
+.Add_One_Lot input {
+    border: none;
+    border-radius: 30px;
+    background-color: var(--dark_grey);
+    padding: 12px;
+    font-size: 16px;
+    color: var(--white);
+}
+
+.Add_One_Lot input ::placeholder{
+    text-decoration: none;
+    font-family: "Open Sans";
+    font-size: 24px;
+    color: var(--white);
+
+}
+
+button {
+    padding: 12px 24px;
+    background-color: var(--main_orange);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--orange);
+}
+
+/* Опционально: стили для выравнивания элементов */
+.Add_One_Lot input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-row.triple button {
+    margin: 0 10px;
+    min-width: 120px;
+}

@@ -6,7 +6,11 @@ export default class AuthService{
     }
 
     static async Login(loginData){
-        return api.post('/token', loginData);
+        return api.post('/token', loginData, {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded' // Указываем нужный Content-Type
+        }
+    })
     }
 
     static async CheckAdmin(){

@@ -64,7 +64,16 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise credentials_exception
     return user
 
-# async def get_current_active_user(current_user: User = Depends(get_current_user)):
-#     if not current_user.is_active:
-#         raise HTTPException(status_code=400, detail="Неактивный пользователь")
-#     return current_user
+async def get_current_active_user(current_user: User = Depends(get_current_user)):
+    if not current_user.is_active:
+        raise HTTPException(status_code=400, detail="Неактивный пользователь")
+    return current_user
+
+# Добавляем функцию для проверки прав администратора
+async def get_current_admin_user(current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="У вас недостаточно прав для выполнения этого действия"
+        )
+    return current_user

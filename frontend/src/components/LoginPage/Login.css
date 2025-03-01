@@ -1,4 +1,53 @@
 .container {
+    font-family: "Bedas Neue";
     display: flex;
     flex-direction: column;
+    gap: 20px; /* Увеличим отступы между элементами */
+    min-width: 770px;
+    background-color: var(--grey);
+    border: solid;
+    border-color: var(--light_grey);
+    border-radius: 30px;
+    padding: 30px;
+}
+
+.container h3 {
+    font-family: "Open Sans";
+    font-size: 24px; /* Увеличим размер шрифта */
+    text-align: center; /* Центрируем текст */
+}
+
+.container input {
+    border: none;
+    border-radius: 30px;
+    height: 49px;
+    background-color: var(--dark_grey);
+    padding: 0 15px; /* Добавим отступы внутри input */
+    font-size: 16px; /* Размер шрифта для input */
+    color: var(--white); /* Цвет текста */
+}
+
+.container button {
+    border: none;
+    border-radius: 30px;
+    margin-top: 20px; /* Увеличим отступ сверху */
+    height: 39px;
+    background-color: var(--main_orange);
+    font-family: sans-serif;
+    color: var(--white);
+    font-size: 16px; /* Размер шрифта для кнопки */
+    cursor: pointer; /* Добавим курсор при наведении */
+}
+
+.container button:hover {
+    background-color: var(--orange); /* Изменение цвета при наведении */
+}
+
+.Login-form {
+    min-width: 770px;
+    height: 323px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Центрируем форму по вертикали */
 }

@@ -1,31 +1,29 @@
 import React, { useState, useNavigate, useContext} from "react";
-import { store, Context } from "../..";
+import { store, Context } from "../../..";
 import { observer } from "mobx-react-lite";
-import "./Login.css";
+import "./Register.css";
 
-function Login() {
+function Registration() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { store } = useContext(Context);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Submitting login...");
-        const logindata = {
-            username: email,
+        const registerdata = {
+            email: email,
             password: password
         }
         try {
-            const response = await store.login(logindata);            
+            const response = await store.registration(registerdata);            
         } catch (error) {
-            alert("Ошибка авторизации: " + error.response?.data?.message);
+            alert("Ошибка регистрации: " + error.response?.data);
         }
     };
     return (
-        <div className="Login-form">
+        <div>
             <form onSubmit={handleSubmit}>
                 <div className="container">
-                <h3>Вход</h3>
                 <label htmlFor="email">Адрес электронной почты</label>
                 <input
                 id="email"
@@ -42,11 +40,11 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 />
-                <button type="submit">Войти</button>
+                <button type="submit">Зарегистрироваться</button>
                 </div>
             </form>
         </div>
     )
 }
 
-export default observer(Login);
+export default observer(Registration);
