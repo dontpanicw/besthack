@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Days+One&display=swap');
+
+:root {
+    --main_orange: #FF6E00;
+    --orange: #E85002;
+    --light_grey: #A7A7A7;
+    --grey: #242423;
+    --dark_grey: #100C08;
+    --white: #FFFFFF;
+    --main_grey: #333333;
+    --boarder_grey: #646464;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+li {
+    margin: 0;
+    padding: 0
+}
+
+button,
+a {
+    padding: 0;
+    transition: all 0.5s ease;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    /* Убирает точки у списка */
+}
+

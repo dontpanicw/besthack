@@ -1,0 +1,85 @@
+body {
+    font-family: "Days One", serif;
+    font-weight: 400;
+    font-style: normal;
+    margin: 0;
+    padding: 0;
+    background-color: var(--dark_grey);
+    color: var(--white);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.search-bar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    color: var(--white);
+    border: 1px solid var(--white);
+    padding: 10px;
+    border-radius: 20px;
+    background-color: var(--grey);
+}
+
+.search-bar select {
+    height: 60px;
+    background-color: var(--dark_grey);
+    margin: 5px;
+    border: none;
+    border-radius: 30px;
+}
+
+.search-bar select option {
+    font-family: "Days One", serif;
+    color: var(--white);
+}
+
+.search-bar button {
+    height: 60px;
+    background-color: var(--main_orange);
+    margin: 5px;
+    border: none;
+    border-radius: 30px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+}
+
+.product {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--grey);
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.product h2 {
+    color: var(--white);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.product p {
+    color: var(--white);
+    text-align: center;
+}
+
+.product-button {
+    background-color: var(--main_orange);
+    min-width: 290px;
+    height: 59px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
