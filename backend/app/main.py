@@ -8,6 +8,7 @@ from datetime import timedelta, datetime
 from fastapi.security import OAuth2PasswordRequestForm
 import csv
 import io
+from starlette.middleware.cors import CORSMiddleware
 
 from app import schemas
 from app.repositories import models
@@ -23,6 +24,16 @@ from app.security import (
 )
 # get_current_active_user,
 app = FastAPI()
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 #
