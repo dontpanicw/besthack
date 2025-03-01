@@ -1,0 +1,45 @@
+# Используем официальный образ Node.js
+FROM node:18-alpine AS build
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем package.json и package-lock.json
+COPY frontend/package*.json ./
+
+# Устанавливаем зависимости
+RUN npm install
+# Устанавливаем недостающий пакет
+RUN npm install mobx-persist-store
+
+# Копируем исходный код фронтенда
+COPY frontend/ ./
+
+# Аргумент для передачи API URL при сборке
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+
+# Собираем приложение
+RUN npm run build
+
+# Устанавливаем nginx для раздачи статических файлов
+FROM nginx:stable-alpine
+
+# Копируем собранные файлы из предыдущего этапа
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Добавляем конфигурацию для перенаправления всех запросов на index.html (для SPA)
+RUN echo 'server { \
+    listen 80; \
+    location / { \
+        root /usr/share/nginx/html; \
+        index index.html; \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
+# Открываем порт
+EXPOSE 80
+
+# Запускаем nginx в foreground режиме
+CMD ["nginx", "-g", "daemon off;"] 

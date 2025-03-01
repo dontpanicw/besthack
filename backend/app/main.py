@@ -25,7 +25,9 @@ from app.security import (
 # get_current_active_user,
 app = FastAPI()
 
-origins = ["*"]
+# Получаем разрешенные источники из переменных окружения или используем значения по умолчанию
+allowed_origins_str = os.getenv("ALLOW_ORIGINS", "*")
+origins = allowed_origins_str.split(",") if allowed_origins_str != "*" else ["*"]
 
 app.add_middleware(
     CORSMiddleware,
