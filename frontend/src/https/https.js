@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Используем переменные окружения или резервные значения
-export const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+export const API_URL = process.env.REACT_APP_API_URL || window.location.origin.replace(window.location.port, "8000");
 
 const api = axios.create({
     withCredentials: true,

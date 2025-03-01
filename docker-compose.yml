@@ -4,15 +4,15 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
       args:
-        - REACT_APP_API_URL=http://localhost:8000
+        - REACT_APP_API_URL=http://backend:8000
     ports:
       - "80:80"
     depends_on:
       - backend
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_API_URL=http://backend:8000
       # Для режима разработки, если фронтенд запускается на локальной машине
-      - API_URL=http://localhost:8000
+      - API_URL=http://backend:8000
     networks:
       - app-network
 
@@ -24,7 +24,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
-      - ALLOW_ORIGINS=http://localhost,http://localhost:80,http://frontend
+      - ALLOW_ORIGINS=http://localhost,http://localhost:80,http://frontend,*
     depends_on:
       - db
     volumes:
