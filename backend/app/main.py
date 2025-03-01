@@ -10,6 +10,7 @@ import csv
 import io
 from starlette.middleware.cors import CORSMiddleware
 
+
 from app import schemas
 from app.repositories import models
 from app.repositories.models import Lots, User, Order
@@ -81,6 +82,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
+@app.get("/lots", response_model=List[schemas.ShortShowLots])
+def get_lots(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    lots = db.query(models.Lots).offset(skip).limit(limit).all()
+    return lots
+
 @app.post("/lot", response_model=schemas.LongShowLots)
 def create_lot(lot: schemas.LotsCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     db_lots = models.Lots(
@@ -96,11 +102,6 @@ def create_lot(lot: schemas.LotsCreate, db: Session = Depends(get_db), current_u
     db.commit()
     db.refresh(db_lots)
     return db_lots
-
-@app.get("/lots", response_model=List[schemas.ShortShowLots])
-def get_lots(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    lots = db.query(models.Lots).offset(skip).limit(limit).all()
-    return lots
 
 @app.post("/upload-csv")
 async def upload_csv(
