@@ -27,6 +27,15 @@ export default class StoreLots {
             console.log(e.response?.data?.message);
         }
     }
+
+    async createLot(lotData){
+        try{
+            const response = await LotsService.createLots(lotData);
+            console.log(response);
+        } catch(e) {
+            console.log(e.response?.data?.message)
+        }
+    }
     
 
    

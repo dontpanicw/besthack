@@ -1,7 +1,16 @@
+
+
 .AddLot {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 1205px;
+    height: auto;
+    background-color: var(--grey);
+    padding: 30px;
+    border: 1px solid var(--white);
+    border-radius: 30px;
+    margin-top: 10px;
 }
 
 .Add_Many_Lots {
@@ -9,14 +18,31 @@
     margin: 0 auto;
 }
 
-.AddFile{
+.AddFile {
     margin: 0 auto;
     width: 1205px;
-    border: 1px solid var(--white);
+    border: 1px solid var(--grey);
     border-radius: 30px;
     height: 242px;
     background-color: var(--dark_grey);
     margin-bottom: 25px;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.AddFile:hover {
+    background-color: var(--hover_grey); /* Добавьте цвет для hover в вашем CSS */
+}
+
+.AddFile p {
+    font-size: 24px;
+    color: var(--white);
+    text-align: center;
 }
 
 .Add_One_Lot {
@@ -39,24 +65,27 @@
     border-radius: 30px;
     background-color: var(--dark_grey);
     padding: 12px;
-    font-size: 16px;
+    font-family: "Open Sans";
+    font-size: 24px;
     color: var(--white);
 }
 
-.Add_One_Lot input ::placeholder{
+.Add_One_Lot input::placeholder {
     text-decoration: none;
     font-family: "Open Sans";
     font-size: 24px;
     color: var(--white);
-
 }
 
-button {
+.Add_One_Lot button {
     padding: 12px 24px;
-    background-color: var(--main_orange);
+    background-color: var(--grey);
     color: white;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid var(--main_orange);
+    width: 300px;
+    border-radius: 30px;
+    font-size: 24px;
+    text-align: center;
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -65,7 +94,6 @@ button:hover {
     background-color: var(--orange);
 }
 
-/* Опционально: стили для выравнивания элементов */
 .Add_One_Lot input {
     width: 100%;
     box-sizing: border-box;

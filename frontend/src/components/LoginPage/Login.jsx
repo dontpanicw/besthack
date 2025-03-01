@@ -26,20 +26,20 @@ function Login() {
             <form onSubmit={handleSubmit}>
                 <div className="container">
                 <h3>Вход</h3>
-                <label htmlFor="email">Адрес электронной почты</label>
                 <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="Адрес электронной почты"
                 required
                 />
-                <label htmlFor="password">Пароль</label>
                 <input 
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Пароль"
                 required
                 />
                 <button type="submit">Войти</button>

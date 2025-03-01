@@ -1,19 +1,25 @@
 .container {
+    margin-top: 200px;
     font-family: "Bedas Neue";
     display: flex;
     flex-direction: column;
     gap: 20px; /* Увеличим отступы между элементами */
     min-width: 770px;
     background-color: var(--grey);
-    border: solid;
-    border-color: var(--light_grey);
+    border: 1px solid var(--light_grey);
     border-radius: 30px;
     padding: 30px;
 }
 
-.container h3 {
+.container input::placeholder{
     font-family: "Open Sans";
-    font-size: 24px; /* Увеличим размер шрифта */
+    font-size: 24px;
+    color: var(--white);
+}
+
+.container h3 {
+    font-family: "Unbounded";
+    font-size: 32px; /* Увеличим размер шрифта */
     text-align: center; /* Центрируем текст */
 }
 
@@ -35,7 +41,7 @@
     background-color: var(--main_orange);
     font-family: sans-serif;
     color: var(--white);
-    font-size: 16px; /* Размер шрифта для кнопки */
+    font-size: 24px; /* Размер шрифта для кнопки */
     cursor: pointer; /* Добавим курсор при наведении */
 }
 
