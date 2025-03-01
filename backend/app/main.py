@@ -12,7 +12,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app import schemas
 from app.repositories import models
-from app.repositories.models import Lots, User
+from app.repositories.models import Lots, User, Order
 from app.settings import engine, get_db
 from app.security import (
     authenticate_user, create_access_token, 
@@ -22,7 +22,8 @@ from app.security import (
     get_current_admin_user,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
-# get_current_active_user,
+from app.data_validation import get_price_validation_ranges
+
 app = FastAPI()
 
 app.add_middleware(
@@ -32,13 +33,6 @@ app.add_middleware(
     allow_methods=["*"],  # Разрешить все методы
     allow_headers=["*"],  # Разрешить все заголовки
 )
-
-# SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
-#
-# # Создаем движок SQLAlchemy
-# engine = create_engine(SQLALCHEMY_DATABASE_URL)
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-# Base = declarative_base()
 
 # Создаем таблицы
 models.Base.metadata.create_all(bind=engine)
@@ -119,12 +113,15 @@ async def upload_csv(
         raise HTTPException(status_code=400, detail="Загруженный файл должен быть в формате CSV")
     
     try:
+        # Получаем допустимые диапазоны цен на основе имеющихся данных
+        price_ranges = get_price_validation_ranges(db)
+        
         # Считываем содержимое файла
         contents = await file.read()
         decoded_content = contents.decode('utf-8')
         
         # Определяем названия полей
-        fieldnames = ['lot_date', 'ksss_nb_code', 'ksss_fuel_code', 'start_volume_liters', 'available', 'price', 'price_for_1ton']
+        fieldnames = ['lot_date', 'ksss_nb_code', 'ksss_fuel_code', 'start_volume_liters', 'price', 'price_for_1ton']
         
         # Создаем CSV reader
         reader = csv.DictReader(io.StringIO(decoded_content), fieldnames=fieldnames)
@@ -172,16 +169,42 @@ async def upload_csv(
                     if lot_date is None:
                         raise ValueError(f"Неверный формат даты: {row['lot_date']}")
                     
+                    # Преобразуем значения цен в числа
+                    price = int(row['price'])
+                    price_for_1ton = int(row['price_for_1ton'])
+                    
+                    # Проверяем соответствие цен допустимым диапазонам
+                    price_in_range = True
+                    price_error_message = ""
+                    
+                    # Проверка price, если есть данные для сравнения
+                    if price_ranges['price']['min'] is not None and price_ranges['price']['max'] is not None:
+                        if price < price_ranges['price']['min'] or price > price_ranges['price']['max']:
+                            price_in_range = False
+                            price_error_message += f"Цена ({price}) находится вне допустимого диапазона ({int(price_ranges['price']['min'])} - {int(price_ranges['price']['max'])}). "
+                    
+                    # Проверка price_for_1ton, если есть данные для сравнения
+                    if price_ranges['price_for_1ton']['min'] is not None and price_ranges['price_for_1ton']['max'] is not None:
+                        if price_for_1ton < price_ranges['price_for_1ton']['min'] or price_for_1ton > price_ranges['price_for_1ton']['max']:
+                            price_in_range = False
+                            price_error_message += f"Цена за 1 тонну ({price_for_1ton}) находится вне допустимого диапазона ({int(price_ranges['price_for_1ton']['min'])} - {int(price_ranges['price_for_1ton']['max'])})."
+                    
+                    # Если цены не соответствуют диапазону, пропускаем запись
+                    if not price_in_range:
+                        skipped_rows += 1
+                        errors.append(f"Строка {row_num}: {price_error_message}")
+                        continue
+                    
                     # Создаем новый лот
                     lot = models.Lots(
                         date=lot_date,
                         code_KSSS_NB=int(row['ksss_nb_code']),
                         code_KSSS_fuel=int(row['ksss_fuel_code']),
                         start_weight=int(row['start_volume_liters']),
-                        current_weight=int(row['start_volume_liters']),
-                        status="Подтвержден" ,
-                        price=int(row['price']),  # Значение по умолчанию
-                        price_for_1ton=int(row['price_for_1ton'])  # Значение по умолчанию
+                        current_weight= int(row['start_volume_liters']),
+                        status="Подтвержден",
+                        price=price,
+                        price_for_1ton=price_for_1ton
                     )
                     
                     # Добавляем в сессию
@@ -202,11 +225,24 @@ async def upload_csv(
         # Сохраняем все изменения в базе данных
         db.commit()
         
+        # Формируем дополнительную информацию о диапазонах цен
+        price_info = {}
+        if price_ranges['price']['avg'] is not None:
+            price_info['price_avg'] = price_ranges['price']['avg']
+            price_info['price_min'] = price_ranges['price']['min']
+            price_info['price_max'] = price_ranges['price']['max']
+        
+        if price_ranges['price_for_1ton']['avg'] is not None:
+            price_info['price_for_1ton_avg'] = price_ranges['price_for_1ton']['avg']
+            price_info['price_for_1ton_min'] = price_ranges['price_for_1ton']['min']
+            price_info['price_for_1ton_max'] = price_ranges['price_for_1ton']['max']
+        
         response = {
             "status": "success",
             "filename": file.filename,
             "processed_rows": processed_rows,
-            "skipped_rows": skipped_rows
+            "skipped_rows": skipped_rows,
+            "price_ranges": price_info
         }
         
         if errors:
@@ -228,4 +264,90 @@ async def show_lot(number: int, db: Session = Depends(get_db), current_user: Use
     if not lot:
         raise HTTPException(status_code=404, detail=f"Event with number {number} not found")
     return lot
+
+@app.post("/order", response_model=schemas.OrderResponse)
+async def create_order(
+    order: schemas.OrderCreate, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    # Получаем лот из БД
+    lot = db.query(Lots).filter(Lots.number == order.lot_number).first()
+    if not lot:
+        raise HTTPException(status_code=404, detail=f"Лот с номером {order.lot_number} не найден")
+    
+    # Проверяем, что запрашиваемый объем не превышает доступный вес
+    if order.volume > lot.current_weight:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Запрашиваемый объем ({order.volume}) превышает доступный ({lot.current_weight})"
+        )
+    
+    # Создаем новый заказ
+    new_order = Order(
+        lot_number=order.lot_number,
+        code_KSSS_NB=lot.code_KSSS_NB,
+        code_KSSS_fuel=lot.code_KSSS_fuel,
+        volume=order.volume,
+        delivery_type=order.delivery_type,
+        user_id=current_user.id
+    )
+    
+    # Вычитаем объем заказа из текущего веса лота
+    lot.current_weight -= order.volume
+    
+    # Если текущий вес стал равен 0, меняем статус на "Продан"
+    if lot.current_weight == 0:
+        lot.status = "Продан"
+    
+    # Сохраняем изменения
+    db.add(new_order)
+    db.commit()
+    
+    # Обновляем данные заказа, чтобы вернуть актуальную информацию
+    db.refresh(new_order)
+    
+    return new_order
+
+@app.get("/orders/my", response_model=List[schemas.OrderResponse])
+async def get_my_orders(
+    skip: int = 0, 
+    limit: int = 100, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    # Получаем заказы текущего пользователя
+    orders = db.query(Order).filter(Order.user_id == current_user.id).offset(skip).limit(limit).all()
+    return orders
+
+@app.get("/orders", response_model=List[schemas.OrderResponse])
+async def get_all_orders(
+    skip: int = 0, 
+    limit: int = 100, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_admin_user)
+):
+    # Для админов - получение всех заказов
+    orders = db.query(Order).offset(skip).limit(limit).all()
+    return orders
+
+@app.post("/create_admin", response_model=schemas.User)
+def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Проверка на существование пользователя с таким email
+    db_user_email = db.query(User).filter(User.email == user.email).first()
+    if db_user_email:
+        raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
+    
+    # Создание нового пользователя
+    hashed_password = get_password_hash(user.password)
+    db_user = User(
+        email=user.email,
+        hashed_password=hashed_password,
+        is_admin=True
+    )
+    
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 

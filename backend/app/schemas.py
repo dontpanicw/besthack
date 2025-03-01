@@ -30,17 +30,6 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
 
-
-class LotsCreate(BaseModel):
-    date: datetime
-    code_KSSS_NB: Optional[int] = None
-    code_KSSS_fuel: Optional[int] = None
-    start_weight: Optional[int] = None
-    current_weight: Optional[int] = None
-    status: Optional[str] = None
-    price: Optional[int] = None
-    price_for_1ton: Optional[int] = None
-
 # разобраться со справочником и другими полями
 
 class ShortShowLots(TunedModel):
@@ -60,4 +49,5 @@ class LongShowLots(TunedModel):
     status: Optional[str] = None
     price: Optional[int] = None
     price_for_1ton: Optional[int] = None
+
 
