@@ -17,9 +17,8 @@ from sqlalchemy.orm import Session
 def create_application() -> FastAPI:
     """Фабричная функция для создания и настройки приложения FastAPI"""
     application = FastAPI(
-        title="Fuel Exchange API",
-        description="API для биржи топлива",
-        version="1.0.0"
+        title="Fuel Exchange",
+        description="Биржа топлива",
     )
     
     # Настройка CORS
@@ -57,23 +56,6 @@ app = create_application()
 async def health():
     """Эндпоинт для проверки работы сервиса"""
     return {"status": "ok"}
-
-# Дополнительный эндпоинт для аутентификации без префикса /auth
-@app.post("/token", response_model=schemas.Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    # В OAuth2PasswordRequestForm поле называется username, но используем его для email
-    user = authenticate_user(db, form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Неверный email или пароль",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
 
 
 

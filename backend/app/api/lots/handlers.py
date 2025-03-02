@@ -19,7 +19,7 @@ from app.api.auth.security import (
 )
 
 from app.api.lots import schemas
-from app.services.lots_service import LotsService
+from app.services.lots_service import LotsService, transform_lot_fields
 
 lots_router = APIRouter()
 
@@ -98,6 +98,39 @@ async def get_lots(
         # Стандартная обработка ошибок
         raise HTTPException(status_code=500, detail=str(e))
 
+# Оставляем для обратной совместимости, но реализуем отдельную логику фильтрации
+@lots_router.get("/filtered-lots", response_model=List[schemas.ShortShowLots])
+async def get_filtered_lots(
+    skip: int = 0, 
+    limit: int = 100, 
+    code_KSSS_NB: int = None, 
+    code_KSSS_fuel: int = None, 
+    db: Session = Depends(get_db)
+):
+    """
+    Получить отфильтрованный список лотов
+    """
+    try:
+        # Создаем фильтрованный запрос
+        query = db.query(Lots)
+        
+        # Добавляем фильтры, если они указаны
+        if code_KSSS_NB is not None:
+            query = query.filter(Lots.code_KSSS_NB == code_KSSS_NB)
+        if code_KSSS_fuel is not None:
+            query = query.filter(Lots.code_KSSS_fuel == code_KSSS_fuel)
+        
+        lots = query.offset(skip).limit(limit).all()
+        
+        # Преобразуем поля для каждого лота
+        for lot in lots:
+            transform_lot_fields(lot)
+        
+        return lots
+    except Exception as e:
+        # Стандартная обработка ошибок
+        raise HTTPException(status_code=500, detail=str(e))
+
 @lots_router.get("/{number}", response_model=schemas.LongShowLots)
 async def get_lot_by_number(
     number: int, 
@@ -155,14 +188,3 @@ async def update_lot_status(
     except Exception as e:
         # Стандартная обработка ошибок
         raise HTTPException(status_code=500, detail=str(e))
-
-# Оставляем для обратной совместимости, но перенаправляем на универсальный эндпоинт
-@lots_router.get("/filtered-lots", response_model=List[schemas.ShortShowLots])
-def get_filtered_lots(
-    skip: int = 0, 
-    limit: int = 100, 
-    code_KSSS_NB: int = None, 
-    code_KSSS_fuel: int = None, 
-    db: Session = Depends(get_db)
-):
-    return get_lots(skip, limit, db)
