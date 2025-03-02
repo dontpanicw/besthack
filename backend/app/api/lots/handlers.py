@@ -73,6 +73,8 @@ def transform_lot_fields(lot):
     lot.fuel_type = fuel_types.get(lot.code_KSSS_fuel, "Не указано")
     lot.region_nb = cities.get(lot.code_KSSS_NB, "Не указано")
     lot.nb_name = oil_bases.get(lot.code_KSSS_NB, "Не указано")
+    # lot.price_for_1ton = 0
+
     if lot.start_weight and lot.start_weight > 0:
         lot.price_for_1ton = lot.price / lot.start_weight
     else:
