@@ -15,7 +15,6 @@ from app.api.auth import schemas
 from sqlalchemy.orm import Session
 
 def create_application() -> FastAPI:
-    """Фабричная функция для создания и настройки приложения FastAPI"""
     application = FastAPI(
         title="Fuel Exchange",
         description="Биржа топлива",
@@ -39,13 +38,8 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
     
-    # Добавление роутеров API
     application.include_router(api_router)
-    
-    # Удаляем добавление обработчиков исключений
-    # add_exception_handlers(application)
-    
-    # Создание таблиц в базе данных (для разработки)
+
     models.Base.metadata.create_all(bind=engine)
     
     return application
@@ -54,7 +48,6 @@ app = create_application()
 
 @app.get("/health")
 async def health():
-    """Эндпоинт для проверки работы сервиса"""
     return {"status": "ok"}
 
 

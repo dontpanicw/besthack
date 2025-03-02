@@ -12,27 +12,15 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    """
-    Базовый класс репозитория с основными CRUD-операциями
-    """
 
     def __init__(self, model: Type[ModelType]):
-        """
-        Инициализация с моделью SQLAlchemy
-        """
         self.model = model
 
     def get(self, db: Session, id: Any) -> Optional[ModelType]:
-        """
-        Получить объект по ID
-        """
         result = db.execute(select(self.model).filter(self.model.id == id))
         return result.scalars().first()
 
     def get_or_404(self, db: Session, id: Any, error_msg: str = None) -> ModelType:
-        """
-        Получить объект по ID или вызвать ошибку 404
-        """
         obj = self.get(db, id)
         if not obj:
             if not error_msg:
@@ -43,27 +31,18 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def get_multi(
         self, db: Session, *, skip: int = 0, limit: int = 100
     ) -> List[ModelType]:
-        """
-        Получить список объектов с пагинацией
-        """
         result = db.execute(select(self.model).offset(skip).limit(limit))
         return result.scalars().all()
 
     def get_by_attribute(
         self, db: Session, attr_name: str, attr_value: Any
     ) -> Optional[ModelType]:
-        """
-        Получить объект по произвольному атрибуту
-        """
         result = db.execute(
             select(self.model).filter(getattr(self.model, attr_name) == attr_value)
         )
         return result.scalars().first()
 
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
-        """
-        Создать новый объект
-        """
         obj_in_data = obj_in.model_dump()
         db_obj = self.model(**obj_in_data)
         db.add(db_obj)
@@ -78,9 +57,6 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db_obj: ModelType,
         obj_in: Union[UpdateSchemaType, Dict[str, Any]]
     ) -> ModelType:
-        """
-        Обновить существующий объект
-        """
         obj_data = db_obj.__dict__
         if isinstance(obj_in, dict):
             update_data = obj_in
@@ -97,9 +73,6 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_obj
 
     def remove(self, db: Session, *, id: int) -> ModelType:
-        """
-        Удалить объект
-        """
         obj = self.get_or_404(db, id)
         db.delete(obj)
         db.commit()

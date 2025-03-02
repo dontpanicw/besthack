@@ -18,7 +18,6 @@ class LotsCreate(BaseModel):
     price: Optional[int] = None
     price_for_1ton: Optional[int] = None
 
-# разобраться со справочником и другими полями
 
 class ShortShowLots(TunedModel):
     number: int

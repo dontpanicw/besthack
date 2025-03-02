@@ -19,10 +19,9 @@ export default class LotsService{
     }
 
     static async Filter(filterData){
-        return api.get('/filtered-lots', filterData, {
-            headers: {
-            'Content-Type': 'application/x-www-form-urlencoded' // Указываем нужный Content-Type
-        }});
+        return api.get('/filtered-lots', {
+            params: filterData
+        });
     }
 
     static async UploadFile(file){

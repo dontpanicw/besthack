@@ -24,12 +24,10 @@ auth_router = APIRouter()
 
 @auth_router.post("/create_admin", response_model=schemas.User)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    # Проверка на существование пользователя с таким email
     db_user_email = db.query(User).filter(User.email == user.email).first()
     if db_user_email:
         raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
 
-    # Создание нового пользователя
     hashed_password = get_password_hash(user.password)
     db_user = User(
         email=user.email,
@@ -45,12 +43,10 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @auth_router.post("/register", response_model=schemas.User)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    # Проверка на существование пользователя с таким email
     db_user_email = db.query(User).filter(User.email == user.email).first()
     if db_user_email:
         raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
 
-    # Создание нового пользователя
     hashed_password = get_password_hash(user.password)
     db_user = User(
         email=user.email,
@@ -65,7 +61,6 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @auth_router.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    # В OAuth2PasswordRequestForm поле называется username, но мы будем использовать его для email
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(

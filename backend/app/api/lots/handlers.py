@@ -54,26 +54,21 @@ def update_lot_status(db: Session):
     """Обновляет статус лотов на 'Неактивен', если их дата уже прошла"""
     current_time = datetime.now()
     
-    # Находим все лоты со статусом 'Подтвержден', у которых дата истекла
     expired_lots = db.query(models.Lots).filter(
         models.Lots.status == "Подтвержден",
         models.Lots.date < current_time
     ).all()
     
-    # Обновляем статус для найденных лотов
     for lot in expired_lots:
         lot.status = "Неактивен"
     
-    # Сохраняем изменения в базе данных
     if expired_lots:
         db.commit()
 
 def transform_lot_fields(lot):
-    """Преобразует коды в человекочитаемые значения и вычисляет цену за 1 тонну"""
     lot.fuel_type = fuel_types.get(lot.code_KSSS_fuel, "Не указано")
     lot.region_nb = cities.get(lot.code_KSSS_NB, "Не указано")
     lot.nb_name = oil_bases.get(lot.code_KSSS_NB, "Не указано")
-    # lot.price_for_1ton = 0
 
     if lot.start_weight and lot.start_weight > 0:
         lot.price_for_1ton = lot.price / lot.start_weight
@@ -95,10 +90,8 @@ async def get_lots(
         lots = LotsService.get_lots(db=db, skip=skip, limit=limit)
         return lots
     except Exception as e:
-        # Стандартная обработка ошибок
         raise HTTPException(status_code=500, detail=str(e))
 
-# Оставляем для обратной совместимости, но реализуем отдельную логику фильтрации
 @lots_router.get("/filtered-lots", response_model=List[schemas.ShortShowLots])
 async def get_filtered_lots(
     skip: int = 0, 
@@ -107,28 +100,25 @@ async def get_filtered_lots(
     code_KSSS_fuel: int = None, 
     db: Session = Depends(get_db)
 ):
-    """
-    Получить отфильтрованный список лотов
-    """
     try:
-        # Создаем фильтрованный запрос
+        print(f"Параметры запроса: code_KSSS_NB={code_KSSS_NB}, code_KSSS_fuel={code_KSSS_fuel}")
+        
         query = db.query(Lots)
         
-        # Добавляем фильтры, если они указаны
         if code_KSSS_NB is not None:
             query = query.filter(Lots.code_KSSS_NB == code_KSSS_NB)
         if code_KSSS_fuel is not None:
             query = query.filter(Lots.code_KSSS_fuel == code_KSSS_fuel)
         
         lots = query.offset(skip).limit(limit).all()
+        print(f"Найдено лотов: {len(lots)}")
         
-        # Преобразуем поля для каждого лота
         for lot in lots:
             transform_lot_fields(lot)
         
         return lots
     except Exception as e:
-        # Стандартная обработка ошибок
+        print(f"Ошибка при фильтрации лотов: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @lots_router.get("/{number}", response_model=schemas.LongShowLots)
@@ -144,10 +134,8 @@ async def get_lot_by_number(
         lot = LotsService.get_lot_by_number(db=db, number=number)
         return lot
     except ValueError as e:
-        # Если лот не найден
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        # Стандартная обработка ошибок
         raise HTTPException(status_code=500, detail=str(e))
 
 @lots_router.post("/", response_model=schemas.LongShowLots)
@@ -163,10 +151,8 @@ async def create_lot(
         new_lot = LotsService.create_lot(db=db, lot_data=lot_data)
         return new_lot
     except ValueError as e:
-        # Если данные некорректны
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        # Стандартная обработка ошибок
         raise HTTPException(status_code=500, detail=str(e))
 
 @lots_router.put("/{number}/status", response_model=schemas.LongShowLots)
@@ -183,8 +169,6 @@ async def update_lot_status(
         updated_lot = LotsService.update_lot_status(db=db, number=number, status=status)
         return updated_lot
     except ValueError as e:
-        # Если лот не найден
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        # Стандартная обработка ошибок
         raise HTTPException(status_code=500, detail=str(e))
