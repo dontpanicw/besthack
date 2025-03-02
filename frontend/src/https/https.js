@@ -2,7 +2,7 @@ import axios from "axios";
 import { handleUnauthorized } from "../AuthManager";
 
 
-export const API_URL = "http://31.130.150.30:8000";
+export const API_URL = "http://109.73.207.86:8000";
 
 const api = axios.create({
     withCredentials: true,
