@@ -1,7 +1,8 @@
 import axios from "axios";
+import { handleUnauthorized } from "../AuthManager";
 
-// Используем относительный путь для API, чтобы запросы шли через Nginx
-export const API_URL = "/api";
+
+export const API_URL = "http://31.130.150.30:8000";
 
 const api = axios.create({
     withCredentials: true,
@@ -13,6 +14,16 @@ api.interceptors.request.use((config) => {
 
     return config;
 })
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 500) {
+        handleUnauthorized(); 
+      }
+      return Promise.reject(error);
+    }
+  );
 
 
 export default api;

@@ -66,4 +66,8 @@ export default class Store {
 
     }
 
+    async logout(){
+        this.setAuth(false);
+        localStorage.removeItem('token');
+    }
 }

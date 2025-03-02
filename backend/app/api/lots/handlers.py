@@ -21,9 +21,40 @@ from app.api.lots import schemas
 
 lots_router = APIRouter()
 
+cities = {
+    1: "Москва",
+    2: "Санкт-Петербург",
+    3: "Екатеринбург",
+    4: "Иркутск",
+    5: "Владивосток"
+}
+
+oil_bases = {
+    1: "Нефтебаза_1",
+    2: "Нефтебаза_2",
+    3: "Нефтебаза_3",
+    4: "Нефтебаза_4",
+    5: "Нефтебаза_5"
+}
+
+fuel_types = {
+    1: "АИ-92",
+    2: "АИ-95",
+    3: "АИ-92 Экто",
+    4: "АИ-95 Экто",
+    5: "ДТ"
+}
+
 @lots_router.get("/lots", response_model=List[schemas.ShortShowLots])
 def get_lots(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    for lot in db.query(models.Lots).offset(skip).limit(limit).all():
+        lot.fuel_type = fuel_types[lot.code_KSSS_fuel]
+        lot.region_nb = cities[lot.code_KSSS_NB]
+        lot.nb_name = oil_bases[lot.code_KSSS_NB]
+        lot.price_for_1ton = lot.price / lot.start_weight
+    
     lots = db.query(models.Lots).offset(skip).limit(limit).all()
+    # lots = db.query(models.Lots).offset(skip).limit(limit).all()
     return lots
 
 @lots_router.post("/lot", response_model=schemas.LongShowLots)

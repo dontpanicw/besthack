@@ -18,6 +18,12 @@ h1 {
     font-weight: 500px;
 }
 
+.Main {
+    font-size: 128px;
+    text-align: center;
+    align-self: center;
+}
+
 .homepage_container {
     display: flex;
     flex-direction: column;
@@ -50,6 +56,10 @@ h1 {
 .search-bar h2 {
     font-size: 32px;
 
+}
+
+.error {
+    border-color: var(--main_orange);
 }
 
 .search-bar select {

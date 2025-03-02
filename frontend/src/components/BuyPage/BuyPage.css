@@ -1,0 +1,104 @@
+
+
+.BuyPage {
+    width: 100vw;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.BuyForm {
+    gap: 10px;
+    width: 711px;
+    height: 506px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--light_grey);
+    border-radius: 30px;
+    background-color: var(--grey);
+}
+
+.BuyForm form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.BuyForm input{
+    width: 639px;
+    height: 39px;
+    border: none;
+    border-radius: 30px;
+    padding: 10px;
+    color: var(--white);
+    font-size: 24px;
+    background-color: var(--dark_grey);
+}
+
+.BuyForm select{
+    min-width: 639px;
+    min-height: 39px;
+    border: none;
+    border-radius: 30px;
+    padding: 10px;
+    color: var(--white);
+    font-size: 24px;
+    background-color: var(--dark_grey);
+}
+
+.BuyForm input::placeholder{
+    font-size: 24px;
+    color: var(--white);
+}
+
+.BuyForm button{
+    width: 639px;
+    height: 45px;
+    border: none;
+    border-radius: 30px;
+    font-size: 24px;
+    color: var(--white);
+    background-color: var(--main_orange);
+}
+
+.BuyForm h3 {
+    font-family: "Unbounded";
+    font-size: 32px;
+}
+
+.Info {
+    width: 474px;
+    height: 595px;
+    background-color: rgba(36, 36, 35, 0.6);
+    border: 1px solid var(--light_grey);
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 30px;
+   
+}
+
+.Info h3 {
+    font-size: 32px;
+    font-family: "Unbounded";
+}
+
+.info_about ul{
+    margin-left: 10px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    font-size: 24px;
+    gap: 20px;
+}
+
+.info_about li{
+    list-style-image: url('./../../../public/Vector\ 20.svg'); 
+}
+

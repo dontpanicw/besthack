@@ -22,9 +22,9 @@ class LotsCreate(BaseModel):
 
 class ShortShowLots(TunedModel):
     number: int
-    code_KSSS_NB: int
-    code_KSSS_fuel: int
-    current_weight: int
+    fuel_type: str
+    region_nb: str
+    nb_name: str
     price_for_1ton: int
 
 class LongShowLots(TunedModel):
