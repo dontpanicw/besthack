@@ -9,4 +9,12 @@ export default class LotsService{
     static async createLots(lotData){
         return api.post('/lot', lotData);
     }
+
+    static async showLot(number){
+        return api.get(`/lot/${number}`);
+    }
+
+    static async makeOrder(orderData){
+        return api.post('/order');
+    }
 }

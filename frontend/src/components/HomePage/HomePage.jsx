@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useContext } from "react";
 import "./Homepage.css";
 import { Context, storelots } from "../..";
+import { Link } from "react-router-dom";
 
 function Homepage() {
     const {storelots} = useContext(Context);
@@ -13,7 +14,7 @@ function Homepage() {
 
     return (
         <div className="homepage_container">
-            <h1>Заголовок</h1>
+            <h1 className="Main">Заголовок</h1>
             <div className="search-bar">
                 <h2>Поиск по каталогу</h2>
                 <div className="selectors">
@@ -42,7 +43,9 @@ function Homepage() {
                     <li>Название нефтебазы</li>
                     <li>Регион нефтебазы</li>
                 </ul>
+                <Link to={`/BuyPage/${e.number}`}>
                 <button className="product-button">Купить</button>
+                </Link>
 
             </div>
             )):(<></>)}
