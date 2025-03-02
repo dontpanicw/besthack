@@ -25,11 +25,11 @@ def create_application() -> FastAPI:
         CORSMiddleware,
         allow_origins=[
             "http://localhost:3000", 
-            "http://31.130.150.30:8000", 
-            "http://31.130.150.30", 
+            "http://109.73.207.86:8000",
+            "http://109.73.207.86",
             "http://localhost",
-            "http://31.130.150.30:3000", 
-            "http://31.130.150.30:80", 
+            "http://109.73.207.86:3000",
+            "http://109.73.207.86:80",
             "http://localhost:80",
             "http://localhost:8000"
         ],
