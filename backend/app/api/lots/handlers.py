@@ -20,7 +20,6 @@ from app.api.auth.security import (
 
 from app.api.lots import schemas
 from app.services.lots_service import LotsService
-from app.core.exception_handlers import NotFoundException, BadRequestException
 
 lots_router = APIRouter()
 
@@ -85,7 +84,7 @@ async def get_lots(
     skip: int = 0, 
     limit: int = 100, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)
 ):
     """
     Получить список лотов с пагинацией
@@ -94,14 +93,14 @@ async def get_lots(
         lots = LotsService.get_lots(db=db, skip=skip, limit=limit)
         return lots
     except Exception as e:
-        # Логгирование ошибки
-        raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {str(e)}")
+        # Стандартная обработка ошибок
+        raise HTTPException(status_code=500, detail=str(e))
 
 @lots_router.get("/{number}", response_model=schemas.LongShowLots)
 async def get_lot_by_number(
     number: int, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(get_current_user)
 ):
     """
     Получить детальную информацию о лоте по его номеру
@@ -109,17 +108,18 @@ async def get_lot_by_number(
     try:
         lot = LotsService.get_lot_by_number(db=db, number=number)
         return lot
-    except NotFoundException as e:
+    except ValueError as e:
+        # Если лот не найден
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        # Логгирование ошибки
-        raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {str(e)}")
+        # Стандартная обработка ошибок
+        raise HTTPException(status_code=500, detail=str(e))
 
 @lots_router.post("/", response_model=schemas.LongShowLots)
 async def create_lot(
     lot_data: schemas.LotsCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    # current_user: User = Depends(get_current_admin_user)
 ):
     """
     Создать новый лот (требуются права администратора)
@@ -127,11 +127,12 @@ async def create_lot(
     try:
         new_lot = LotsService.create_lot(db=db, lot_data=lot_data)
         return new_lot
-    except BadRequestException as e:
+    except ValueError as e:
+        # Если данные некорректны
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        # Логгирование ошибки
-        raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {str(e)}")
+        # Стандартная обработка ошибок
+        raise HTTPException(status_code=500, detail=str(e))
 
 @lots_router.put("/{number}/status", response_model=schemas.LongShowLots)
 async def update_lot_status(
@@ -146,11 +147,12 @@ async def update_lot_status(
     try:
         updated_lot = LotsService.update_lot_status(db=db, number=number, status=status)
         return updated_lot
-    except NotFoundException as e:
+    except ValueError as e:
+        # Если лот не найден
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        # Логгирование ошибки
-        raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {str(e)}")
+        # Стандартная обработка ошибок
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Оставляем для обратной совместимости, но перенаправляем на универсальный эндпоинт
 @lots_router.get("/filtered-lots", response_model=List[schemas.ShortShowLots])

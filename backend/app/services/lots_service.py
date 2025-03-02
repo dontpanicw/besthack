@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from app.api.lots.schemas import LotsCreate, LongShowLots, ShortShowLots
 from app.repositories.models import Lots
-from app.core.exception_handlers import NotFoundException, BadRequestException
 
 class LotsService:
     """Сервис для работы с лотами"""
@@ -20,7 +19,7 @@ class LotsService:
         """Получает лот по номеру"""
         lot = db.query(Lots).filter(Lots.number == number).first()
         if not lot:
-            raise NotFoundException(message=f"Лот с номером {number} не найден")
+            raise ValueError(f"Лот с номером {number} не найден")
         return lot
     
     @staticmethod
@@ -57,7 +56,7 @@ class LotsService:
         """Обновляет статус лота"""
         lot = db.query(Lots).filter(Lots.number == number).first()
         if not lot:
-            raise NotFoundException(message=f"Лот с номером {number} не найден")
+            raise ValueError(f"Лот с номером {number} не найден")
         
         lot.status = status
         db.commit()

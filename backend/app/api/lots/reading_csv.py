@@ -16,7 +16,7 @@ from app.api.auth.security import (
     get_current_admin_user,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
-# from app.data_validation import get_price_validation_ranges
+from app.api.lots.data_validation import get_price_validation_ranges
 
 create_lot_router = APIRouter()
 
@@ -24,7 +24,7 @@ create_lot_router = APIRouter()
 async def upload_csv(
         file: UploadFile = File(...),
         db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
+        # current_user: User = Depends(get_current_user)
 ):
     # Проверяем, что файл имеет расширение .csv
     if not file.filename.endswith('.csv'):
