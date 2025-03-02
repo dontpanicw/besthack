@@ -33,7 +33,7 @@ def create_application() -> FastAPI:
     )
     
     # Добавление роутеров API
-    application.include_router(api_router, prefix="/api")
+    application.include_router(api_router)
     
     # Добавление обработчиков исключений
     add_exception_handlers(application)
