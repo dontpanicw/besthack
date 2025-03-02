@@ -9,6 +9,29 @@ function Registration() {
     const [password, setPassword] = useState('');
     const { store } = useContext(Context);
     const [isRegistered, setIsRegistered] = useState(false);
+    const [errors, setErrors] = useState('');
+
+
+    const validateForm = () => {
+        const newErrors = {};
+
+
+        if (!email) {
+            newErrors.email = "Поле email обязательно для заполнения";
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            newErrors.email = "Некорректный формат email";
+        }
+
+        if (!password) {
+            newErrors.password = "Поле пароль обязательно для заполнения";
+        } else if (password.length < 4) {
+            newErrors.password = "Пароль должен содержать минимум 4 символа";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0; 
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,6 +39,11 @@ function Registration() {
             email: email,
             password: password
         }
+
+        if(!validateForm()){
+            return;
+        }
+
         try {
             const response = await store.registration(registerdata); 
             setIsRegistered(true);
@@ -25,10 +53,12 @@ function Registration() {
         }
     };
 
+
+   
     if (isRegistered) {
         return <Navigate to={`/Login`} replace />;
     }
-    
+
     return (
         <div className="Login-form">
             <form onSubmit={handleSubmit}>
@@ -42,6 +72,7 @@ function Registration() {
                 placeholder="Адрес электронной почты"
                 required
                 />
+                {errors.email && <span className="error-message">{errors.email}</span>}
                 <input 
                 id="password"
                 type="password"
@@ -50,6 +81,7 @@ function Registration() {
                  placeholder="Пароль"
                 required
                 />
+                {errors.password && <span className="error-message">{errors.password}</span>}
                 <button type="submit">Зарегистрироваться</button>
                 </div>
             </form>

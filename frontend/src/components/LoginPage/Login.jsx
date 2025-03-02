@@ -24,7 +24,7 @@ function Login() {
         if (!password) {
             newErrors.password = "Поле пароль обязательно для заполнения";
         } else if (password.length < 4) {
-            newErrors.password = "Пароль должен содержать минимум 6 символов";
+            newErrors.password = "Пароль должен содержать минимум 4 символа";
         }
 
         setErrors(newErrors);

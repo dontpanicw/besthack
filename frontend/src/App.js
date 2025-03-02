@@ -9,6 +9,8 @@ import { useContext, useEffect } from "react";
 import { setStore } from "./AuthManager";
 import AddLot from "./components/AddLot/AddLot";
 import BuyPage from "./components/BuyPage/BuyPage";
+import RouteGuard from "./RouteGuard";
+import Footer from "./components/Footer/Footer";
 
 function App() {
   const { store } = useContext(Context);
@@ -28,8 +30,10 @@ function App() {
         <Route path="/Login" element={<Login />} />
         <Route path="/Register" element={<Registration />} />
         <Route path="/AddLot" element={<AddLot />} />
-        <Route path="/BuyPage/:number" element={<BuyPage />} />
+        <Route path="/BuyPage/:number" element={<RouteGuard><BuyPage /></RouteGuard>} />
       </Routes>
+
+   
 
     </>
   );

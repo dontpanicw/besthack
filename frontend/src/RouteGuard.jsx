@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { Context, store } from "../index";
+import { store, Context } from ".";
 import { observer } from "mobx-react-lite";
 import Login from "./components/LoginPage/Login";
 

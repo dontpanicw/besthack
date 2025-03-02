@@ -28,21 +28,25 @@
     border-radius: 30px;
     height: 49px;
     background-color: var(--dark_grey);
-    padding: 0 15px; /* Добавим отступы внутри input */
-    font-size: 16px; /* Размер шрифта для input */
-    color: var(--white); /* Цвет текста */
+    padding: 0 15px; 
+    font-size: 16px; 
+    color: var(--white); 
 }
 
 .container button {
     border: none;
     border-radius: 30px;
-    margin-top: 20px; /* Увеличим отступ сверху */
+    margin-top: 20px; 
     height: 39px;
     background-color: var(--main_orange);
     font-family: sans-serif;
     color: var(--white);
-    font-size: 24px; /* Размер шрифта для кнопки */
-    cursor: pointer; /* Добавим курсор при наведении */
+    font-size: 24px; 
+    cursor: pointer; 
+}
+
+.error {
+    border: 1px solid var(--main_orange);
 }
 
 .container button:hover {
@@ -56,4 +60,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center; /* Центрируем форму по вертикали */
+}
+
+.error-message{
+    font-size: 16px;
+    font-family: "Open Sans";
+    color: var(--main_orange);
 }

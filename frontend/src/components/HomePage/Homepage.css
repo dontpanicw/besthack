@@ -28,6 +28,10 @@ h1 {
     font-family: "Unbounded";
 }
 
+.label {
+    font-family: "Unbounded";
+}
+
 .homepage_container {
     display: flex;
     flex-direction: column;
@@ -65,6 +69,12 @@ h1 {
 
 .error {
     border-color: var(--main_orange);
+}
+
+.error-message{
+    font-size: 16px;
+    font-family: "Open Sans";
+    color: var(--main_orange);
 }
 
 .search-bar select {
@@ -151,8 +161,12 @@ h1 {
     margin-left: 15px;
 }
 
+.product::hover{
+    border-color: var(--light_grey);
+}
+
 .product ul {
-    margin-top: 20px;
+    margin-top: auto;
 }
 
 li {
@@ -166,6 +180,12 @@ li {
     border-radius: 20px;
     margin-bottom: 10px;
     margin-top: auto;
+    justify-self: flex-end;
     font-size: 32px;
     color: var(--white);
+}
+
+.button-container{
+    align-self: center;
+    margin-top: auto;
 }
