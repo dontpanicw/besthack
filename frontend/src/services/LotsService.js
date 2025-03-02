@@ -15,6 +15,21 @@ export default class LotsService{
     }
 
     static async makeOrder(orderData){
-        return api.post('/order');
+        return api.post('/order', orderData);
+    }
+
+    static async Filter(filterData){
+        return api.get('/filtered-lots', filterData, {
+            headers: {
+            'Content-Type': 'application/x-www-form-urlencoded' // Указываем нужный Content-Type
+        }});
+    }
+
+    static async UploadFile(file){
+        return api.post('/upload-csv', file, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
     }
 }
