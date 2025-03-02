@@ -7,26 +7,23 @@ export default class LotsService{
     }
 
     static async createLots(lotData){
-        return api.post('/lot', lotData);
+        return api.post('/lots', lotData);
     }
 
     static async showLot(number){
-        return api.get(`/lot/${number}`);
+        return api.get(`/lots/${number}`);
     }
 
     static async makeOrder(orderData){
-        return api.post('/order', orderData);
+        return api.post('/orders/order', orderData);
     }
 
     static async Filter(filterData){
-        return api.get('/filtered-lots', filterData, {
-            headers: {
-            'Content-Type': 'application/x-www-form-urlencoded' // Указываем нужный Content-Type
-        }});
+        return api.get('/lots/filtered-lots', filterData);
     }
 
     static async UploadFile(file){
-        return api.post('/upload-csv', file, {
+        return api.post('/lots/upload/upload-csv', file, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
