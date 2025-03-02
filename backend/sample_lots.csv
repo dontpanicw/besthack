@@ -1,6 +1,0 @@
-lot_date,ksss_nb_code,ksss_fuel_code,start_volume_liters,available
-2024-07-01,101,201,5000,true
-2024-07-02,102,202,3000,true
-2024-07-03,103,203,4000,false
-2024-07-04,104,204,6000,true
-2024-07-05,105,205,2500,true 

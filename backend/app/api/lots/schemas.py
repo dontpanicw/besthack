@@ -1,35 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 class TunedModel(BaseModel):
     class Config:
         """tells pydantic to convert even non dict obj to json"""
         from_attributes = True
-
-# Схемы для пользователей
-class UserBase(BaseModel):
-    email: EmailStr
-
-class UserCreate(UserBase):
-    password: str
-
-class User(UserBase):
-    id: int
-    is_admin: bool
-
-    class Config:
-        from_attributes = True
-
-# Схемы для авторизации
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    email: Optional[str] = None
-
 
 class LotsCreate(BaseModel):
     date: datetime
@@ -60,4 +37,3 @@ class LongShowLots(TunedModel):
     status: Optional[str] = None
     price: Optional[int] = None
     price_for_1ton: Optional[int] = None
-
