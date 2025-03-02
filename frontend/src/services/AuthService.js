@@ -14,6 +14,6 @@ export default class AuthService{
     }
 
     static async CheckAdmin(){
-        return api.get('/users/me');
+        return api.get('/auth/me/admin-status');
     }
 }
