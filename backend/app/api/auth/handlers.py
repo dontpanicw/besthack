@@ -73,3 +73,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@auth_router.get("/me/admin-status", response_model=schemas.UserAdminStatus)
+async def get_admin_status(current_user: User = Depends(get_current_user)):
+    """
+    Возвращает статус администратора для текущего пользователя
+    """
+    return {"is_admin": current_user.is_admin, "email": current_user.email}

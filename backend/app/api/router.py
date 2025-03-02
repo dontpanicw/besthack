@@ -7,7 +7,11 @@ from app.api.lots.reading_csv import create_lot_router
 
 api_router = APIRouter()
 
+# Основные роутеры с префиксами
 api_router.include_router(auth_router, prefix="/auth", tags=["Аутентификация"])
 api_router.include_router(lots_router, prefix="/lots", tags=["Лоты"])
 api_router.include_router(create_lot_router, prefix="/lots/upload", tags=["Загрузка лотов"])
-api_router.include_router(orders_router, prefix="/orders", tags=["Заказы"]) 
+api_router.include_router(orders_router, prefix="/orders", tags=["Заказы"])
+
+# Дублируем роутер аутентификации без префикса для совместимости с фронтендом
+api_router.include_router(auth_router, tags=["Аутентификация-Совместимость"]) 

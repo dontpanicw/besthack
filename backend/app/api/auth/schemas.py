@@ -22,3 +22,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+# Схема для проверки статуса администратора
+class UserAdminStatus(BaseModel):
+    is_admin: bool
+    email: str
