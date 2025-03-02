@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from fastapi import Depends, HTTPException
-from sqlalchemy import select
+from fastapi import Depends, HTTPException, BackgroundTasks
+from sqlalchemy import select, update
+from datetime import datetime
 
 from sqlalchemy.orm import Session
 from typing import List
@@ -18,6 +19,8 @@ from app.api.auth.security import (
 )
 
 from app.api.lots import schemas
+from app.services.lots_service import LotsService
+from app.core.exception_handlers import NotFoundException, BadRequestException
 
 lots_router = APIRouter()
 
@@ -48,6 +51,24 @@ fuel_types = {
     5: "ДТ"
 }
 
+def update_lot_status(db: Session):
+    """Обновляет статус лотов на 'Неактивен', если их дата уже прошла"""
+    current_time = datetime.now()
+    
+    # Находим все лоты со статусом 'Подтвержден', у которых дата истекла
+    expired_lots = db.query(models.Lots).filter(
+        models.Lots.status == "Подтвержден",
+        models.Lots.date < current_time
+    ).all()
+    
+    # Обновляем статус для найденных лотов
+    for lot in expired_lots:
+        lot.status = "Неактивен"
+    
+    # Сохраняем изменения в базе данных
+    if expired_lots:
+        db.commit()
+
 def transform_lot_fields(lot):
     """Преобразует коды в человекочитаемые значения и вычисляет цену за 1 тонну"""
     lot.fuel_type = fuel_types.get(lot.code_KSSS_fuel, "Не указано")
@@ -59,35 +80,77 @@ def transform_lot_fields(lot):
         lot.price_for_1ton = 0
     return lot
 
-@lots_router.get("/lots", response_model=List[schemas.ShortShowLots])
-def get_lots(
+@lots_router.get("/", response_model=List[schemas.ShortShowLots])
+async def get_lots(
     skip: int = 0, 
     limit: int = 100, 
-    code_KSSS_NB: int = None, 
-    code_KSSS_fuel: int = None, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    # Начинаем с базового запроса
-    query = db.query(models.Lots)
-    
-    # Добавляем фильтры, если они указаны
-    if code_KSSS_NB is not None:
-        query = query.filter(models.Lots.code_KSSS_NB == code_KSSS_NB)
-        
-    if code_KSSS_fuel is not None:
-        query = query.filter(models.Lots.code_KSSS_fuel == code_KSSS_fuel)
-    
-    # Применяем пагинацию
-    query = query.offset(skip).limit(limit)
-    
-    # Получаем результаты
-    lots = query.all()
-    
-    # Преобразуем данные
-    for lot in lots:
-        transform_lot_fields(lot)
-    
-    return lots
+    """
+    Получить список лотов с пагинацией
+    """
+    try:
+        lots = LotsService.get_lots(db=db, skip=skip, limit=limit)
+        return lots
+    except Exception as e:
+        # Логгирование ошибки
+        raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {str(e)}")
+
+@lots_router.get("/{number}", response_model=schemas.LongShowLots)
+async def get_lot_by_number(
+    number: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Получить детальную информацию о лоте по его номеру
+    """
+    try:
+        lot = LotsService.get_lot_by_number(db=db, number=number)
+        return lot
+    except NotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        # Логгирование ошибки
+        raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {str(e)}")
+
+@lots_router.post("/", response_model=schemas.LongShowLots)
+async def create_lot(
+    lot_data: schemas.LotsCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin_user)
+):
+    """
+    Создать новый лот (требуются права администратора)
+    """
+    try:
+        new_lot = LotsService.create_lot(db=db, lot_data=lot_data)
+        return new_lot
+    except BadRequestException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        # Логгирование ошибки
+        raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {str(e)}")
+
+@lots_router.put("/{number}/status", response_model=schemas.LongShowLots)
+async def update_lot_status(
+    number: int,
+    status: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin_user)
+):
+    """
+    Обновить статус лота (требуются права администратора)
+    """
+    try:
+        updated_lot = LotsService.update_lot_status(db=db, number=number, status=status)
+        return updated_lot
+    except NotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        # Логгирование ошибки
+        raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {str(e)}")
 
 # Оставляем для обратной совместимости, но перенаправляем на универсальный эндпоинт
 @lots_router.get("/filtered-lots", response_model=List[schemas.ShortShowLots])
@@ -98,28 +161,4 @@ def get_filtered_lots(
     code_KSSS_fuel: int = None, 
     db: Session = Depends(get_db)
 ):
-    return get_lots(skip, limit, code_KSSS_NB, code_KSSS_fuel, db)
-
-@lots_router.post("/lot", response_model=schemas.LongShowLots)
-def create_lot(lot: schemas.LotsCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    db_lots = models.Lots(
-    date = lot.date,
-    code_KSSS_NB = lot.code_KSSS_NB,
-    code_KSSS_fuel = lot.code_KSSS_fuel,
-    start_weight = lot.start_weight,
-    current_weight = lot.current_weight,
-    status = "Подтвержден",
-    price = lot.price,
-    price_for_1ton = lot.price_for_1ton)
-    db.add(db_lots)
-    db.commit()
-    db.refresh(db_lots)
-    return db_lots
-
-@lots_router.get("/lot/{number}", response_model=schemas.LongShowLots)
-async def show_lot(number: int, db: Session = Depends(get_db)):
-    result = db.execute(select(Lots).where(Lots.number == number))
-    lot = result.scalars().first()
-    if not lot:
-        raise HTTPException(status_code=404, detail=f"Event with number {number} not found")
-    return lot
+    return get_lots(skip, limit, db)
