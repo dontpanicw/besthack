@@ -7,22 +7,26 @@ function BuyPage() {
     const {number} = useParams();
     const {storelots} = useContext(Context);
     const [volume, setVolume] = useState(null);
-    const [code_KSSS_NB, setCode_KSSS_NB] = useState(null);
-    const [code_KSSS_fuel, setCode_KSSS_fuel] = useState(null);
     const [deliverytype, setDeliveryType] = useState('');
 
     useEffect(() => {
-        storelots.showLot(number);
+        fetchLot();
     }, [])
 
-    const handleSubmit = () => {
+    const fetchLot = async () => {
+        await storelots.showLot(number);
+    }
+
+    const handleSubmit = async () => {
         const orderData = {
-                lot_number: number,
-                volume: volume,
+                lot_number: parseInt(number),
+                volume: parseInt(volume),
                 delivery_type: deliverytype
         }
-        storelots.makeOrder(orderData);
+        await storelots.makeOrder(orderData);
     }
+
+ 
     return (
         <div className="BuyPage">
             <div className="Info">
@@ -43,24 +47,15 @@ function BuyPage() {
             </div>
             <div className="BuyForm">
                 <h3>Оформление заказа</h3>
-                <form>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSubmit();
+                }}>
                     <input
                     type="number"
                     placeholder="Объем"
                     value={volume}
                     onChange={(e) => setVolume(e.target.value)}
-                    />
-                    <input
-                    type="number"
-                    placeholder="Код КССС НБ"
-                    value={code_KSSS_NB}
-                    onChange={(e) => setCode_KSSS_NB(e.target.value)}
-                    />
-                    <input
-                    type="number"
-                    placeholder="Код КССС Топлива"
-                    value={code_KSSS_fuel}
-                    onChange={(e) => setCode_KSSS_fuel(e.target.value)}
                     />
                     <select
                     placeholder="Тип доставки"

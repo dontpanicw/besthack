@@ -38,7 +38,6 @@ export default class Store {
             localStorage.setItem('token', response.data.access_token);
             this.setAuth(true);
     
-            // Получаем данные пользователя сразу после успешного входа
             await this.checkAdmin();
         } catch (e) {
             alert(e.response?.data?.detail);
@@ -49,7 +48,6 @@ export default class Store {
         try {
             const response = await AuthService.Register(registerData);
             console.log(response);
-            this.setAuth(true);
         } catch (e) {
             console.log(e.response?.data?.detail);
         }

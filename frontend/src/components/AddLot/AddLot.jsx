@@ -45,18 +45,29 @@ function AddLots() {
         document.getElementById("file-input").click();
     };
 
+   /* const handleFileUpload = async (event) => {
+        const file = event.target.files[0]; 
+        const formData = new FormData();
+        formData.append('file', file);
+        await storelots.UploadFile(formData);
+    } */
+
     return (
         <div className="Add">
             <div className="Add_Many_Lots">
                 <h2>Добавление нескольких лотов</h2>
-                <div className="AddFile" onClick={handleDivClick}>
+                <div className="AddFile" onClick={handleFileChange}>
                     <input
                         id="file-input"
                         type="file"
+                        accept=".csv"
                         style={{ display: "none" }}
-                        onChange={handleFileChange}
+                        value={file}
                     />
-                    <p>Нажмите для загрузки файла</p>
+                    <p onClick={async (e) => {
+                        e.preventDefault();
+                        await storelots.UploadFile(file);
+                    }}>Нажмите для загрузки файла</p>
                 </div>
             </div>
             <div className="Add_One_Lot">
@@ -79,18 +90,30 @@ function AddLots() {
                         />
                     </div>
                     <div className="input-row">
-                        <input 
+                        <select
                         type="number" 
-                        placeholder="Код КССС НБ"
                         value={code_KSSS_NB}
                         onChange={(e) => setCode_KSSS_NB(e.target.value)} 
-                        />
-                        <input 
+                        >
+                            <option key="">Код КССС НБ</option>
+                            <option  key="1" value={1}>1</option>
+                            <option key="1" value={2}>2</option>
+                            <option key="1" value={3}>3</option>
+                            <option key="1" value={4}>4</option>
+                            <option key="1" value={5}>5</option>
+                        </select>
+                        <select 
                         type="number" 
-                        placeholder="Код КССС Топлива"
                         value={code_KSSS_fuel}
                         onChange={(e) => setCode_KSSS_fuel(e.target.value)}
-                         />
+                         >
+                            <option key="">Код КССС Топлива</option>
+                            <option  key="1" value={1}>1</option>
+                            <option key="1" value={2}>2</option>
+                            <option key="1" value={3}>3</option>
+                            <option key="1" value={4}>4</option>
+                            <option key="1" value={5}>5</option>
+                         </select>
                     </div>
                     <div className="input-row triple">
                         <input 

@@ -10,7 +10,7 @@ export default class StoreLots {
         makeAutoObservable(this);
         makePersistable(this, {
             name: "StoreLots",
-            properties: ["lots"], 
+            properties: ["lots", "lot"], 
             storage: window.localStorage, 
         });
     }
@@ -61,6 +61,23 @@ export default class StoreLots {
         }
     }
 
-   
+    async Filter(filterData){
+        try{
+            const response = await LotsService.Filter(filterData);
+            this.setLots(response.data);
+            console.log(response);
+        } catch(e) {
+            console.log(e.response?.detail?.msg)
+        }
+    }
+
+    async UploadFile(file){
+        try{
+            const response = await LotsService.UploadFile(file);
+            console.log(response)
+        } catch (e) {
+            console.log(e.response)
+        }
+    }
 
 }

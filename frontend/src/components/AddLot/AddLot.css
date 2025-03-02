@@ -70,6 +70,16 @@
     color: var(--white);
 }
 
+.Add_One_Lot select{
+    border: none;
+    border-radius: 30px;
+    background-color: var(--dark_grey);
+    padding: 12px;
+    font-family: "Open Sans";
+    font-size: 24px;
+    color: var(--white);
+}
+
 .Add_One_Lot input::placeholder {
     text-decoration: none;
     font-family: "Open Sans";
